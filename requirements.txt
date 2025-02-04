@@ -1,0 +1,7 @@
+pandas
+numpy 
+seaborn 
+
+# The following will automatically trigger the setup file 
+
+-e .
