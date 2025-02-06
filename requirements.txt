@@ -1,7 +1,7 @@
 pandas
 numpy 
 seaborn 
-
+scikit-learn
 # The following will automatically trigger the setup file 
 
 -e .
