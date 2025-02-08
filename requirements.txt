@@ -2,6 +2,9 @@ pandas
 numpy 
 seaborn 
 scikit-learn
+catboost
+xgboost
+dill
 # The following will automatically trigger the setup file 
 
--e .
+# -e .
