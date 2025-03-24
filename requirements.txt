@@ -1,11 +1,12 @@
-pandas
-numpy 
-seaborn 
-scikit-learn
-catboost
-xgboost
-dill
-flask
-# The following will automatically trigger the setup file 
+pandas==2.2.3
+numpy==1.26.4
+seaborn==0.13.2
+scikit-learn==1.6.1
+catboost==1.2.7
+xgboost==2.1.4
+dill==0.3.9
+flask==3.1.0
+gunicorn==23.0.0
+# The above will automatically trigger the setup file 
 
 # -e .

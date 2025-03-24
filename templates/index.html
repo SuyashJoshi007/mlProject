@@ -1,1 +1,68 @@
-<h1>Welcome to the page</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Predictor</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #242424;
+            border-radius: 16px;
+            padding: 30px;
+            width: 500px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+        h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: #03dac6;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #e0e0e0;
+        }
+        .btn-primary {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #03dac6, #00c4b4);
+            color: #121212;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #00c4b4, #03dac6);
+            transform: scale(1.08);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Student Performance Predictor</h1>
+        <p>
+            This is a machine learning student performance-based project that uses a regression model to predict student performance based on various factors such as gender, ethnicity, parental education, lunch type, test preparation, and past scores. It analyzes patterns in the data to provide an estimated score.
+        </p>
+        <p>
+            Click the button below to input student details and get predictions.
+        </p>
+        <a href="{{ url_for('predict_datapoint') }}" class="btn-primary">🚀 Get Started</a>
+    </div>
+</body>
+</html>
