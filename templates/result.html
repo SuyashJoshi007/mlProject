@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Prediction Results</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg0:#0b0d10; --bg1:#15181d; --card:rgba(25,28,34,.78);
+      --text:#e6ecff; --muted:#a6b3c7; --accentA:#00dbc3; --accentB:#6d5efc; --accentC:#00c4b4;
+      --radius:18px; --shadow:0 16px 60px rgba(0,0,0,.45);
+      --gap: clamp(12px, 2vw, 18px);
+      --pad: clamp(12px, 2.4vw, 20px);
+      --pad-card: clamp(14px, 2.8vw, 22px);
+      --btn-pad-y: clamp(10px, 1.8vw, 12px);
+      --btn-pad-x: clamp(12px, 2.4vw, 16px);
+      --fs-h1: clamp(20px, 3.4vw, 28px);
+      --fs-sm: clamp(12px, 1.6vw, 14px);
+      --fs-base: clamp(13px, 1.8vw, 16px);
+    }
+    *{box-sizing:border-box}
+
+    html,body{
+      height:100%; margin:0; color:var(--text);
+      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 600px at -10% -20%, #1b1d23 0%, transparent 70%),
+        radial-gradient(1000px 500px at 120% -10%, #1a2431 0%, transparent 60%),
+        linear-gradient(135deg, var(--bg0), var(--bg1));
+      display:grid; place-items:center; padding: var(--pad);
+    }
+
+    .wrap{
+      width:min(1100px, 98vw);
+      display:grid;
+      gap: var(--gap);
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
+      backdrop-filter:blur(10px);
+      box-shadow:var(--shadow);
+      padding: var(--pad-card);
+      position:relative; isolation:isolate;
+    }
+    .card::after{
+      content:""; position:absolute; inset:-1px; border-radius:calc(var(--radius) + 1px);
+      padding:1px; background:linear-gradient(135deg,var(--accentA),var(--accentB));
+      -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; opacity:.25;
+    }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap: var(--gap); flex-wrap:wrap; margin-bottom: clamp(6px, 1.5vw, 10px);
+    }
+    h1{
+      margin:.2rem 0 .6rem;
+      font-size: var(--fs-h1);
+      font-weight:800; letter-spacing:.2px;
+    }
+    .actions{
+      display:flex; gap: var(--gap); flex-wrap:wrap; width:auto;
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      border:none; cursor:pointer;
+      padding: var(--btn-pad-y) var(--btn-pad-x);
+      border-radius:12px; font-weight:700; text-decoration:none;
+      transition:transform .2s,filter .2s,box-shadow .2s;
+      min-height: 40px;
+    }
+    .btn-ghost{ background:rgba(255,255,255,.06); color:var(--text); border:1px solid rgba(255,255,255,.12); }
+    .btn-ghost:hover{ transform:translateY(-1px); }
+
+    /* Responsive grids: auto-fit panels down to 260px */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--gap);
+    }
+    .panel{ padding: 6px; }
+
+    .title-sm{
+      margin:0 0 8px; font-size: var(--fs-sm);
+      color:var(--muted); letter-spacing:.3px; text-transform:uppercase;
+    }
+    .legend{ font-size: var(--fs-sm); color:var(--muted); }
+
+    .split{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: var(--gap);
+    }
+
+    /* Canvases flex to container width (Chart.js is responsive by default) */
+    canvas{
+      width:100% !important;
+      height:auto !important;   /* let Chart.js compute aspect ratio */
+      max-width:100%;
+      display:block;
+    }
+
+    .num{ font-weight:800; }
+
+    /* Very small devices: make actions full-width */
+    @media (max-width: 420px){
+      .actions{ width:100%; }
+      .actions .btn{ flex:1 1 auto; }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{ transition:none !important; animation:none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="card">
+      <div class="topbar">
+        <h1>Prediction Results</h1>
+        <div class="actions">
+          <a class="btn btn-ghost" href="{{ url_for('predict_datapoint') }}">← Back to Form</a>
+          <a class="btn btn-ghost" href="{{ url_for('index') }}">🏠 Home</a>
+        </div>
+      </div>
+
+      <!-- Summary grid -->
+      <div class="grid">
+        <div class="panel">
+          <h3 class="title-sm">Overall Score (Donut Gauge)</h3>
+          <canvas id="donut"></canvas>
+          <p class="legend" style="margin-top:8px;">
+            Predicted overall performance: <span class="num">{{ overall|default(76, true) }}%</span>
+          </p>
+        </div>
+
+        <div class="panel">
+          <h3 class="title-sm">Subject Mix (Radar)</h3>
+          <canvas id="radar"></canvas>
+          <p class="legend" style="margin-top:8px;">
+            Reading: {{ reading|default(82, true) }}%, Writing: {{ writing|default(74, true) }}%, Math: {{ math|default(76, true) }}%
+          </p>
+        </div>
+      </div>
+
+      <!-- Details -->
+      <div class="split" style="margin-top:12px;">
+        <div class="panel">
+          <h3 class="title-sm">Top Drivers (Feature Contributions)</h3>
+          <canvas id="drivers"></canvas>
+          <p class="legend" style="margin-top:8px;">
+            Higher bars indicate stronger positive impact toward your predicted score.
+          </p>
+        </div>
+        <div class="panel">
+          <h3 class="title-sm">Snapshot</h3>
+          <ul class="legend" style="line-height:1.75;">
+            <li>Gender: {{ gender|default('—') }}</li>
+            <li>Ethnicity: {{ ethnicity|default('—') }}</li>
+            <li>Parental Education: {{ parental_level_of_education|default('—') }}</li>
+            <li>Lunch: {{ lunch|default('—') }}</li>
+            <li>Prep Course: {{ test_preparation_course|default('—') }}</li>
+            <li>Reading Score: {{ reading|default(0, true) }}</li>
+            <li>Writing Score: {{ writing|default(0, true) }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const overall = Number('{{ overall|default(76, true) }}');
+      const reading = Number('{{ reading|default(82, true) }}');
+      const writing = Number('{{ writing|default(74, true) }}');
+      const math    = Number('{{ math|default(76, true) }}');
+
+      const gridColor   = 'rgba(230,236,255,0.15)';
+      const tickColor   = 'rgba(230,236,255,0.65)';
+      const legendColor = 'rgba(230,236,255,0.85)';
+
+      // Donut Gauge
+      const donutCtx = document.getElementById('donut').getContext('2d');
+      new Chart(donutCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Score', 'Remaining'],
+          datasets: [{
+            data: [overall, Math.max(0, 100 - overall)],
+            backgroundColor: ['#00dbc3', 'rgba(255,255,255,0.08)'],
+            borderWidth: 0,
+            hoverOffset: 2,
+            circumference: 300,
+            rotation: 210
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed}%` } }
+          },
+          cutout: '70%',
+        }
+      });
+
+      // Radar
+      const radarCtx = document.getElementById('radar').getContext('2d');
+      new Chart(radarCtx, {
+        type: 'radar',
+        data: {
+          labels: ['Reading','Writing','Math'],
+          datasets: [{
+            label: 'Subject Balance',
+            data: [reading, writing, math],
+            backgroundColor: 'rgba(0,219,195,0.22)',
+            borderColor: '#00dbc3',
+            pointBackgroundColor: '#6d5efc',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            r: {
+              angleLines: { color: gridColor },
+              grid: { color: gridColor },
+              pointLabels: { color: legendColor, font: { size: 12 } },
+              ticks: { display: true, color: tickColor, backdropColor: 'transparent', stepSize: 20, max: 100, beginAtZero: true }
+            }
+          }
+        }
+      });
+
+      // Drivers (example contributions)
+      const driversCtx = document.getElementById('drivers').getContext('2d');
+      const labels = ['Prep Completed','Standard Lunch','Parental Edu','Reading','Writing'];
+      const values = [
+        '{{ test_preparation_course|default("none") }}' === 'completed' ? 18 : 4,
+        '{{ lunch|default("free/reduced") }}' === 'standard' ? 12 : 5,
+        ['master\'s degree','bachelor\'s degree'].includes('{{ parental_level_of_education|default("") }}') ? 10 : 6,
+        Math.round(reading * 0.2),
+        Math.round(writing * 0.2)
+      ];
+
+      new Chart(driversCtx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Contribution (pts)',
+            data: values,
+            borderRadius: 8,
+            backgroundColor: ['#6d5efc','#00c4b4','#62b0ff','#8e85ff','#00dbc3'],
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } },
+            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 11 } } }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

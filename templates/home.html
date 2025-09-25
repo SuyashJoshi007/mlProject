@@ -1,136 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Performance Predictor</title>
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            background: #242424;
-            border-radius: 16px;
-            padding: 30px;
-            width: 420px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.8);
-            text-align: center;
-            position: relative;
-        }
-        h1 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #03dac6;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 15px;
-            text-align: left;
-        }
-        select, input {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            background: #333333;
-            color: #ffffff;
-            font-size: 15px;
-            outline: none;
-            margin-bottom: 12px;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        select:focus, input:focus {
-            background: #444444;
-            transform: scale(1.05);
-        }
-        .btn-primary {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #03dac6, #00c4b4);
-            color: #121212;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.2s;
-            margin-top: 20px;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #00c4b4, #03dac6);
-            transform: scale(1.08);
-        }
-        .result {
-            margin-top: 25px;
-            font-size: 20px;
-            font-weight: 700;
-            color: #03dac6;
-        }
-        .icon {
-            font-size: 50px;
-            margin-bottom: 15px;
-            color: #03dac6;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Student Performance — Form</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root{
+      --bg0:#0b0d10; --bg1:#15181d; --card:rgba(25,28,34,.78);
+      --text:#e6ecff; --muted:#a6b1c4; --accentA:#00dbc3; --accentB:#6d5efc; --accentC:#00c4b4;
+      --ring:rgba(109,94,252,.5);
+      --radius:18px; --shadow:0 16px 60px rgba(0,0,0,.45);
+      --field:#1e222a; --fieldBorder:rgba(255,255,255,.08); --fieldHover:#242a34;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      height:100%; margin:0; color:var(--text);
+      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(1200px 600px at -10% -20%, #1b1d23 0%, transparent 70%),
+        radial-gradient(1000px 500px at 120% -10%, #1a2431 0%, transparent 60%),
+        linear-gradient(135deg, var(--bg0), var(--bg1));
+      display:grid; place-items:center; padding:24px;
+    }
+    body::before{
+      content:""; position:fixed; inset:0; opacity:.04; pointer-events:none;
+      background-image:repeating-radial-gradient(circle at 0 0,#fff,#fff 1px,transparent 1px,transparent 4px);
+      mix-blend-mode:soft-light;
+    }
+
+    .container{
+      width:min(560px,95vw); background:var(--card); border-radius:var(--radius);
+      padding:22px; box-shadow:var(--shadow); backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,.06); position:relative; isolation:isolate;
+    }
+    .container::after{
+      content:""; position:absolute; inset:-1px; border-radius:calc(var(--radius) + 1px);
+      padding:1px; background:linear-gradient(135deg,var(--accentA),var(--accentB));
+      -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; opacity:.25;
+    }
+
+    .topbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+    .title{
+      margin:0; font-weight:800; line-height:1.15; letter-spacing:.2px;
+      background:linear-gradient(135deg,#eaf7ff,#bcd6ff 60%,#c4ffe9);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+      font-size:clamp(20px,3.6vw,28px);
+    }
+    .btn{ display:inline-flex; align-items:center; gap:8px; border:none; cursor:pointer;
+      padding:10px 14px; border-radius:12px; font-weight:700; text-decoration:none;
+      transition:transform .2s,filter .2s,box-shadow .2s; }
+    .btn-ghost{
+      background:rgba(255,255,255,.06); color:var(--text); border:1px solid rgba(255,255,255,.12);
+    }
+    .btn-ghost:hover{ transform:translateY(-1px); }
+    .btn-primary{
+      background:linear-gradient(135deg,var(--accentA),var(--accentC)); color:#0f1113;
+      box-shadow:0 10px 24px rgba(0,0,0,.35);
+    }
+    .btn-primary:hover{ transform:translateY(-2px); filter:brightness(1.05); }
+
+    .lead{ color:var(--muted); margin:.25rem 0 1rem; font-size:.9rem; }
+
+    form{ display:grid; gap:14px; margin-top:6px; }
+    .row{ display:grid; gap:14px; }
+    @media(min-width:560px){ .row{ grid-template-columns:1fr 1fr } }
+
+    .field{ display:grid; gap:8px; }
+    label{ font-size:13px; color:var(--muted); }
+
+    /* DARK selects / inputs */
+    select, input[type="number"]{
+      width:100%; padding:12px 14px; border:1px solid var(--fieldBorder);
+      border-radius:12px; background:var(--field); color:var(--text);
+      font-size:15px; outline:none; transition:border-color .2s, box-shadow .2s, transform .2s, background-color .2s;
+      appearance:none;
+    }
+    select:hover, input[type="number"]:hover{ background:var(--fieldHover); }
+    select:focus, input[type="number"]:focus{
+      border-color:var(--ring); box-shadow:0 0 0 4px rgba(109,94,252,.18);
+      transform:translateY(-1px);
+    }
+
+    /* custom dropdown arrow (light on dark) */
+    select{
+      background-image:
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23cfd6ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
+      background-repeat:no-repeat; background-position:right 12px center; background-size:18px;
+      padding-right:40px;
+    }
+
+    .actions{ display:flex; gap:10px; margin-top:6px; justify-content:flex-end; flex-wrap:wrap; }
+
+    .footer-note{
+      margin-top:10px; font-size:12px; color:var(--muted); text-align:center;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="icon">📚</div>
-        <h1>Student Exam Performance Predictor</h1>
-        <form action="{{ url_for('predict_datapoint') }}" method="post">
-            <label>Gender</label>
-            <select name="gender" required>
-                <option selected disabled value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-            </select>
-            <label>Ethnicity</label>
-            <select name="ethnicity" required>
-                <option selected disabled value="">Select Ethnicity</option>
-                <option value="group A">Group A</option>
-                <option value="group B">Group B</option>
-                <option value="group C">Group C</option>
-                <option value="group D">Group D</option>
-                <option value="group E">Group E</option>
-            </select>
-            <label>Parent's Education</label>
-            <select name="parental_level_of_education" required>
-                <option selected disabled value="">Select Education</option>
-                <option value="associate's degree">Associate's Degree</option>
-                <option value="bachelor's degree">Bachelor's Degree</option>
-                <option value="high school">High School</option>
-                <option value="master's degree">Master's Degree</option>
-                <option value="some college">Some College</option>
-                <option value="some high school">Some High School</option>
-            </select>
-            <label>Lunch Type</label>
-            <select name="lunch" required>
-                <option selected disabled value="">Select Lunch</option>
-                <option value="free/reduced">Free/Reduced</option>
-                <option value="standard">Standard</option>
-            </select>
-            <label>Test Preparation</label>
-            <select name="test_preparation_course" required>
-                <option selected disabled value="">Select Course</option>
-                <option value="none">None</option>
-                <option value="completed">Completed</option>
-            </select>
-            <label>Writing Score (0-100)</label>
-            <input type="number" name="writing_score" placeholder="Enter Writing Score" min="0" max="100" required>
-            <label>Reading Score (0-100)</label>
-            <input type="number" name="reading_score" placeholder="Enter Reading Score" min="0" max="100" required>
-            <button class="btn-primary" type="submit">🚀 Predict Score</button>
-        </form>
-        <div class="result">{{ results }}</div>
+  <main class="container">
+    <div class="topbar">
+      <a class="btn btn-ghost" href="{{ url_for('index') }}">← Back</a>
+      <h1 class="title">Student Exam Performance — Form</h1>
+      <span style="width:88px"></span>
     </div>
+    <p class="lead">Fill in the details below. We’ll estimate the exam performance and visualize it on the results page.</p>
+
+    <form action="{{ url_for('predict_datapoint') }}" method="post" novalidate>
+      <div class="row">
+        <div class="field">
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender" required>
+            <option selected disabled value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="ethnicity">Ethnicity</label>
+          <select id="ethnicity" name="ethnicity" required>
+            <option selected disabled value="">Select Ethnicity</option>
+            <option value="group A">Group A</option>
+            <option value="group B">Group B</option>
+            <option value="group C">Group C</option>
+            <option value="group D">Group D</option>
+            <option value="group E">Group E</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="parentEdu">Parent's Education</label>
+        <select id="parentEdu" name="parental_level_of_education" required>
+          <option selected disabled value="">Select Education</option>
+          <option value="associate's degree">Associate's Degree</option>
+          <option value="bachelor's degree">Bachelor's Degree</option>
+          <option value="high school">High School</option>
+          <option value="master's degree">Master's Degree</option>
+          <option value="some college">Some College</option>
+          <option value="some high school">Some High School</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="lunch">Lunch Type</label>
+          <select id="lunch" name="lunch" required>
+            <option selected disabled value="">Select Lunch</option>
+            <option value="free/reduced">Free/Reduced</option>
+            <option value="standard">Standard</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="prep">Test Preparation</label>
+          <select id="prep" name="test_preparation_course" required>
+            <option selected disabled value="">Select Course</option>
+            <option value="none">None</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="writing">Writing Score (0–100)</label>
+          <input id="writing" type="number" name="writing_score" placeholder="Enter writing score" min="0" max="100" required />
+        </div>
+
+        <div class="field">
+          <label for="reading">Reading Score (0–100)</label>
+          <input id="reading" type="number" name="reading_score" placeholder="Enter reading score" min="0" max="100" required />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">🚀 Predict & View Results</button>
+      </div>
+    </form>
+
+    <p class="footer-note">Your input isn’t stored on the server; it’s used only for this prediction.</p>
+  </main>
 </body>
 </html>
