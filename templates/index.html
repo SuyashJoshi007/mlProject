@@ -8,275 +8,195 @@
   />
   <title>Student Performance Predictor</title>
 
-  <!-- Optional: modern font -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root{
-      --bg0: #0d0f12;
-      --bg1: #161a20;
-      --card: rgba(28, 32, 38, 0.72);
-      --text: #ecf2ff;
-      --muted: #a7b3c7;
-      --accentA: #03dac6;
-      --accentB: #6d5efc;
-      --accentC: #00c4b4;
-      --ring: rgba(109, 94, 252, 0.55);
-      --ok: #03dac6;
-      --warn: #ffcc66;
-      --err: #ff6b6b;
+      /* Palette */
+      --bg0:#0d0f12; --bg1:#161a20; --card:rgba(28,32,38,.72);
+      --text:#ecf2ff; --muted:#a7b3c7; --accentA:#03dac6; --accentB:#6d5efc; --accentC:#00c4b4;
+      --ring:rgba(109,94,252,.55);
+
+      /* Layout scales */
+      --wrap-w: min(1120px, 98vw);
+      --pad-page: clamp(10px, 3vw, 28px);
+      --pad-card: clamp(14px, 3vw, 28px);
+      --gap: clamp(10px, 2.6vw, 22px);
       --radius: 18px;
-      --shadow: 0 16px 60px rgba(0,0,0,0.45);
-      --gap: 16px;
+
+      /* Typography scales */
+      --fs-h1: clamp(20px, 5.2vw, 36px);
+      --fs-lead: clamp(13px, 2.2vw, 16px);
+      --fs-hint: clamp(11px, 1.8vw, 12px);
+      --fs-btn: clamp(13px, 2vw, 16px);
+
+      /* Control scales */
+      --btn-pad-y: clamp(10px, 1.8vw, 14px);
+      --btn-pad-x: clamp(12px, 3vw, 18px);
+
+      /* Visual sizes */
+      --chip: clamp(48px, 8vw, 68px);
+      --gauge: clamp(160px, 34vw, 280px);
     }
 
-    * { box-sizing: border-box; }
-
-    html, body {
-      height: 100%;
-      margin: 0;
-      color: var(--text);
-      font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    *{ box-sizing:border-box }
+    html,body{
+      height:100%; margin:0; color:var(--text);
+      font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       background:
         radial-gradient(1200px 600px at -10% -20%, #1b1d23 0%, transparent 70%),
         radial-gradient(1000px 500px at 120% -10%, #1a2431 0%, transparent 60%),
         linear-gradient(135deg, var(--bg0), var(--bg1));
-      display: grid;
-      place-items: center;
-      padding: clamp(16px, 2.5vw, 32px);
+      display:grid; place-items:center; padding: var(--pad-page);
     }
-
     /* Ambient grain */
     body::before{
-      content:"";
-      position: fixed;
-      inset: 0;
-      opacity:.04;
-      pointer-events: none;
-      background-image: repeating-radial-gradient(circle at 0 0, #fff, #fff 1px, transparent 1px, transparent 4px);
-      mix-blend-mode: soft-light;
+      content:""; position:fixed; inset:0; opacity:.04; pointer-events:none;
+      background-image:repeating-radial-gradient(circle at 0 0,#fff,#fff 1px,transparent 1px,transparent 4px);
+      mix-blend-mode:soft-light;
     }
 
     .container{
-      width: min(960px, 96vw);
-      display: grid;
-      gap: clamp(16px, 3vw, 28px);
+      width: var(--wrap-w);
+      display:grid;
+      gap: var(--gap);
     }
 
-    .card {
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: var(--radius);
+    .card{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius);
       backdrop-filter: blur(10px);
-      box-shadow: var(--shadow);
-      position: relative;
-      isolation: isolate;
+      box-shadow: 0 16px 60px rgba(0,0,0,.45);
+      position:relative; isolation:isolate;
+      padding: var(--pad-card);
     }
-
-    /* gradient stroke frame */
+    /* gradient frame */
     .card::after{
-      content:"";
-      position:absolute; inset:-1px;
-      border-radius: calc(var(--radius) + 1px);
-      padding: 1px;
-      background: linear-gradient(135deg, var(--accentA), var(--accentB));
-      -webkit-mask:
-        linear-gradient(#000 0 0) content-box,
-        linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-              mask-composite: exclude;
-      pointer-events: none;
-      opacity: .25;
+      content:""; position:absolute; inset:-1px; border-radius:calc(var(--radius) + 1px);
+      padding:1px; background:linear-gradient(135deg, var(--accentA), var(--accentB));
+      -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; opacity:.25;
     }
 
-    .hero {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: clamp(12px, 2.5vw, 24px);
-      padding: clamp(20px, 3.5vw, 32px);
-    }
-    @media (max-width: 860px){
-      .hero { grid-template-columns: 1fr; }
+    /* Hero: 1–2 columns depending on space */
+    .hero{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      align-items:center;
+      gap: var(--gap);
     }
 
-    .hero__copy{
-      padding-right: clamp(0px, 3vw, 18px);
-    }
-
+    .hero__copy{ min-width:0; }
     .logo-chip{
-      width: 68px; height: 68px;
-      display: grid; place-items:center;
-      border-radius: 20px;
-      background: radial-gradient(60% 60% at 30% 20%, #ffffff33, transparent),
-                  linear-gradient(135deg, var(--accentA), var(--accentB));
-      box-shadow: 0 8px 28px rgba(0,0,0,0.35);
-      color: #0f1012;
-      font-size: 36px;
-      margin-bottom: 8px;
+      width: var(--chip); height: var(--chip);
+      display:grid; place-items:center; border-radius: 20px;
+      background: linear-gradient(135deg, var(--accentA), var(--accentB));
+      color:#0f1012; font-size: clamp(24px, 4.2vw, 36px);
+      margin-bottom: clamp(6px, 1.2vw, 10px);
     }
 
     h1{
-      margin: 6px 0 10px 0;
-      font-size: clamp(22px, 4.2vw, 34px);
-      font-weight: 700;
-      line-height: 1.15;
-      background: linear-gradient(135deg, #eaf7ff, #bcd6ff 60%, #c4ffe9);
-      -webkit-background-clip: text;
-              background-clip: text;
-      color: transparent;
+      margin:6px 0 10px;
+      font-size: var(--fs-h1);
+      font-weight:700; line-height:1.15;
+      background:linear-gradient(135deg,#eaf7ff,#bcd6ff 60%,#c4ffe9);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
     }
 
     p.lead{
-      color: var(--muted);
-      margin: 0 0 14px 0;
-      font-size: clamp(14px, 1.9vw, 16px);
-      line-height: 1.6;
+      color:var(--muted);
+      margin: 0 0 12px;
+      font-size: var(--fs-lead);
+      line-height:1.6;
     }
 
     .cta-row{
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      margin-top: 10px;
+      display:flex; flex-wrap:wrap; align-items:center; gap:10px;
+      margin-top: 6px;
     }
-
     .btn-primary{
-      padding: 14px 18px;
-      border: none;
-      border-radius: 12px;
+      padding: var(--btn-pad-y) var(--btn-pad-x);
+      border:none; border-radius:12px;
       background: linear-gradient(135deg, var(--accentA), var(--accentC));
-      color: #0f1113;
-      font-size: 16px;
-      font-weight: 700;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
-      transition: transform .2s, filter .2s, box-shadow .2s;
+      color:#0f1113; font-weight:700; font-size: var(--fs-btn);
+      text-decoration:none; display:inline-flex; align-items:center; gap:10px;
+      box-shadow:0 10px 24px rgba(0,0,0,.35);
+      transition: transform .2s, filter .2s;
+      min-height: 42px;
     }
     .btn-primary:hover{ transform: translateY(-2px); filter: brightness(1.05); }
-    .btn-primary:active{ transform: translateY(0); }
-
-    .hint{
-      color: var(--muted);
-      font-size: 12px;
-    }
+    .hint{ color:var(--muted); font-size: var(--fs-hint); }
 
     .hero__visual{
-      display: grid;
-      place-items: center;
-      gap: 16px;
-      padding: clamp(6px, 2vw, 10px);
+      display:grid; place-items:center; gap: clamp(10px, 2vw, 16px);
+      min-width:0; /* prevent overflow on tiny screens */
     }
 
-    /* Output gauge (CSS-only baseline; animated by small JS) */
+    /* Gauge */
     .gauge{
-      --p: 0; /* set at runtime via inline style or JS */
-      --size: clamp(180px, 26vw, 240px);
-      --track: rgba(255,255,255,0.08);
-      --fill: var(--accentA);
-      width: var(--size);
-      aspect-ratio: 1 / 1;
-      border-radius: 50%;
-      position: relative;
-      background:
-        conic-gradient(var(--fill) calc(var(--p)*1%), var(--track) 0);
-      display: grid;
-      place-items: center;
-      box-shadow: inset 0 0 0 8px rgba(255,255,255,0.04);
-      transition: background 0.6s ease;
+      --p: 0; --track: rgba(255,255,255,.08); --fill: var(--accentA);
+      width: min(100%, var(--gauge)); aspect-ratio:1/1;
+      border-radius:50%; position:relative;
+      background: conic-gradient(var(--fill) calc(var(--p)*1%), var(--track) 0);
+      display:grid; place-items:center;
+      box-shadow: inset 0 0 0 8px rgba(255,255,255,.04);
+      transition: background .6s ease;
     }
     .gauge::after{
-      content:"";
-      position:absolute; inset: 10%;
-      border-radius: 50%;
-      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: inset 0 0 40px rgba(0,0,0,0.45);
+      content:""; position:absolute; inset:10%; border-radius:50%;
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.08);
     }
-    .gauge__label{ position: absolute; text-align: center; z-index: 1; }
-    .gauge__value{ font-weight: 800; font-size: clamp(28px, 5vw, 40px); line-height: 1; letter-spacing: 0.5px; }
-    .gauge__desc{ font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .gauge__label{ position:absolute; text-align:center; z-index:1; }
+    .gauge__value{ font-weight:800; font-size: clamp(24px, 6vw, 40px); line-height:1; }
+    .gauge__desc{ font-size: var(--fs-hint); color: var(--muted); margin-top:4px; }
 
-    /* Segmented band with active marker */
-    .band{
-      width: min(380px, 90%);
-      margin: 6px auto 0 auto;
-    }
+    /* Band track with marker */
+    .band{ width:100%; max-width: 520px; margin: 6px auto 0; padding-inline: 4px; }
     .band__track{
-      height: 10px;
-      border-radius: 999px;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
+      height:10px; border-radius:999px; display:grid; grid-template-columns:1fr 1fr 1fr;
+      overflow:hidden; border:1px solid rgba(255,255,255,.08);
     }
-    .band__track > span:nth-child(1){ background: linear-gradient(90deg, #ff8b8b, #ff6b6b); }
-    .band__track > span:nth-child(2){ background: linear-gradient(90deg, #ffdf85, #ffd166); }
-    .band__track > span:nth-child(3){ background: linear-gradient(90deg, #5ff2d8, #03dac6); }
-
-    .marker{
-      position: relative;
-      height: 0;
-    }
+    .band__track>span:nth-child(1){ background:linear-gradient(90deg,#ff8b8b,#ff6b6b); }
+    .band__track>span:nth-child(2){ background:linear-gradient(90deg,#ffdf85,#ffd166); }
+    .band__track>span:nth-child(3){ background:linear-gradient(90deg,#5ff2d8,#03dac6); }
+    .marker{ position:relative; height:0; }
     .marker::after{
-      content: "";
-      position: absolute;
-      top: -14px;
-      left: 0;
-      transform: translateX(-50%);
-      width: 0; height: 0;
-      border-left: 6px solid transparent;
-      border-right: 6px solid transparent;
-      border-bottom: 8px solid #eaf7ff;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
-      transition: left .5s ease;
+      content:""; position:absolute; top:-14px; left:0; transform:translateX(-50%);
+      border-left:6px solid transparent; border-right:6px solid transparent; border-bottom:8px solid #eaf7ff;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,.5));
     }
 
-    .mini-bars{
-      display:grid;
-      gap: 10px;
-      width: min(380px, 90%);
-      margin: 10px auto 0 auto;
+    /* Mini bars */
+    .mini-bars{ display:grid; gap: 8px; width:100%; max-width:520px; margin: 10px auto 0; }
+    .bar{ --v:70%; --col:var(--accentB);
+      height:10px; border-radius:999px; background:rgba(255,255,255,.07);
+      position:relative; overflow:hidden; border:1px solid rgba(255,255,255,.08);
     }
-    .bar{ --v: 70%; --col: var(--accentB);
-      height: 10px; border-radius: 999px; background: rgba(255,255,255,0.07);
-      position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);
+    .bar>span{ position:absolute; inset:0 0 0 auto; width:var(--v); border-radius:999px;
+      background:linear-gradient(90deg, var(--col), var(--accentA)); transition: width .6s ease; }
+    .bar-label{
+      display:flex; justify-content:space-between; align-items:center;
+      color:var(--muted); font-size: var(--fs-hint);
     }
-    .bar > span{
-      position:absolute; inset: 0 0 0 auto;
-      width: var(--v); border-radius: 999px;
-      background: linear-gradient(90deg, var(--col), var(--accentA));
-      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-      transition: width .6s ease;
-    }
-    .bar-label{ display:flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 12px; margin-bottom: 6px; }
 
-    .insights.card{ padding: 16px; }
-    .insights__row{
-      display:flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center;
-    }
-    .badge{
-      padding: 6px 10px; border-radius: 999px; font-weight: 700; font-size: 12px;
-      background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-    }
-    .msg{ color: var(--muted); font-size: 13px; text-align: center; }
+    /* Features grid */
+    .features{ display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--gap); }
+    .feature{ padding: clamp(10px, 2vw, 16px); border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); }
+    .feature h3{ margin: 0 0 6px; font-size: clamp(14px, 2vw, 16px); }
+    .feature p{ margin:0; font-size: var(--fs-hint); color: var(--muted); }
 
-    .features.card{ padding: clamp(16px, 3vw, 22px); }
-    .grid{ display:grid; grid-template-columns: repeat(3,1fr); gap: clamp(12px, 2.4vw, 18px); }
-    @media (max-width: 760px){ .grid{ grid-template-columns: 1fr; } }
-    .feature{ padding: 16px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
-    .feature h3{ margin: 0 0 6px 0; font-size: 16px; }
-    .feature p{ margin: 0; font-size: 13px; color: var(--muted); line-height: 1.6; }
+    /* Very small phones: stack CTA full-width, tighten gaps */
+    @media (max-width: 420px){
+      .cta-row .btn-primary{ flex:1 1 auto; justify-content:center; }
+      .container{ gap: clamp(8px, 3vw, 18px); }
+    }
 
+    /* Reduce motion */
     @media (prefers-reduced-motion: reduce){
-      *{ transition: none !important; animation: none !important; }
+      *{ transition:none !important; animation:none !important; }
     }
   </style>
 </head>
@@ -289,38 +209,31 @@
         <h1>Student Exam Performance Predictor</h1>
         <p class="lead">
           Predict exam performance from key factors like gender, ethnicity, parental education,
-          lunch type, prep course, and prior scores. Built on a regression model to surface
-          a clear, actionable estimate.
+          lunch type, prep course, and prior scores.
         </p>
-
         <div class="cta-row">
-          <a href="{{ url_for('predict_datapoint') }}" class="btn-primary">
-            🚀 Get Started
-          </a>
+          <a href="{{ url_for('predict_datapoint') }}" class="btn-primary">🚀 Get Started</a>
           <span class="hint">No sign-in required · Instant results</span>
         </div>
       </div>
 
       <div class="hero__visual">
-        <!-- Visual Output Gauge -->
-        <!-- move Jinja value to data attribute and inline CSS var to avoid using it in <style> -->
         {% set math = results|default(76, true) %}
-        <div class="gauge" data-score="{{ math }}" style="--p: 0;" title="Predicted Math score">
+        <!-- Gauge -->
+        <div class="gauge" data-score="{{ math }}" style="--p:0;">
           <div class="gauge__label">
-            <div class="gauge__value" id="gaugeValue">0<span style="font-weight:600;font-size:.6em;">%</span></div>
+            <div class="gauge__value" id="gaugeValue">0<span style="font-size:.6em;">%</span></div>
             <div class="gauge__desc">Predicted Performance</div>
           </div>
         </div>
 
-        <!-- Segmented band + active marker -->
-        <div class="band" aria-hidden="true">
-          <div class="band__track">
-            <span></span><span></span><span></span>
-          </div>
-          <div class="marker" id="bandMarker" style="left: 0%;"></div>
+        <!-- Band (marker only; no text band here) -->
+        <div class="band">
+          <div class="band__track"><span></span><span></span><span></span></div>
+          <div class="marker" id="bandMarker" style="left:0%;"></div>
         </div>
 
-        <!-- Mini bars (example subject breakdown; replace numbers if you pass them) -->
+        <!-- Mini bars -->
         <div class="mini-bars" aria-hidden="true">
           <div class="bar-label"><span>Reading</span><span id="rPct">82%</span></div>
           <div class="bar" id="rBar" style="--v:82%; --col:#6d5efc;"><span></span></div>
@@ -334,29 +247,20 @@
       </div>
     </section>
 
-    <!-- INSIGHTS -->
-    <section class="insights card">
-      <div class="insights__row">
-        <span class="badge" id="bandBadge">Band: –</span>
-        <span class="badge">Score: <span id="scoreBadge">–%</span></span>
-      </div>
-      <p class="msg" id="insightMsg">Loading insights…</p>
-    </section>
-
     <!-- FEATURES -->
-    <section class="features card">
-      <div class="grid">
+    <section class="card">
+      <div class="features">
         <div class="feature">
           <h3>🎯 Focused Inputs</h3>
-          <p>Only the most predictive factors—kept simple and fast so you can get to the answer quickly.</p>
+          <p>Only the most predictive factors—kept simple and fast.</p>
         </div>
         <div class="feature">
           <h3>⚡ Instant Estimate</h3>
-          <p>Optimized model and lightweight UI deliver results immediately after submission.</p>
+          <p>Optimized model and lightweight UI for quick results.</p>
         </div>
         <div class="feature">
           <h3>🔒 Local & Private</h3>
-          <p>No account required. Your input stays within the session used for generating the prediction.</p>
+          <p>Your input isn’t stored, only used for this prediction.</p>
         </div>
       </div>
     </section>
@@ -365,47 +269,27 @@
   <script>
     (function(){
       const gauge = document.querySelector('.gauge');
-      const target = parseFloat(gauge?.dataset.score || '0');  // {{ math }} is injected into data-score
       const valueEl = document.getElementById('gaugeValue');
       const marker = document.getElementById('bandMarker');
-
       const mBar = document.getElementById('mBar');
-      const rBar = document.getElementById('rBar');
-      const wBar = document.getElementById('wBar');
 
-      const bandBadge = document.getElementById('bandBadge');
-      const scoreBadge = document.getElementById('scoreBadge');
-      const insightMsg = document.getElementById('insightMsg');
+      const target = Math.max(0, Math.min(100, parseFloat(gauge?.dataset.score || '0')));
 
-      // simple count-up & fill animation
+      // Count-up & fill animation (short and smooth)
       let cur = 0;
-      const step = Math.max(1, Math.round(target / 30)); // ~30 frames
-      const timer = setInterval(() => {
-        cur = Math.min(target, cur + step);
+      const frames = 28;
+      const inc = target / frames;
+      const tick = () => {
+        cur = Math.min(target, cur + inc);
         gauge.style.setProperty('--p', cur);
         mBar.style.setProperty('--v', cur + '%');
         valueEl.firstChild.nodeValue = Math.round(cur);
-        if (cur >= target) clearInterval(timer);
-      }, 16);
+        if (cur < target) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
 
-      // move marker across the 0..100 band
-      const left = Math.max(0, Math.min(100, target));
-      marker.style.left = left + '%';
-
-      // compute band + message
-      let band = 'Low', msg = 'Foundational focus recommended: revisit core concepts and practice targeted exercises.';
-      if (target >= 67) { band = 'High'; msg = 'Strong performance. Keep challenging with advanced problem sets to sustain growth.'; }
-      else if (target >= 34) { band = 'Average'; msg = 'Steady ground. Prioritize weak topics and timed practice to push into High band.'; }
-
-      bandBadge.textContent = 'Band: ' + band;
-      scoreBadge.textContent = Math.round(target) + '%';
-      insightMsg.textContent = msg;
-
-      // if you later pass reading/writing via Jinja, update bars here:
-      // rBar.style.setProperty('--v', '{{ reading|default(82) }}%');
-      // wBar.style.setProperty('--v', '{{ writing|default(74) }}%');
-      // document.getElementById('rPct').textContent = '{{ reading|default(82) }}%';
-      // document.getElementById('wPct').textContent = '{{ writing|default(74) }}%';
+      // Move marker (no band text here—keep that for results page)
+      marker.style.left = target + '%';
     })();
   </script>
 </body>

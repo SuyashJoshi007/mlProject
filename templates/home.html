@@ -4,8 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Student Performance — Form</title>
+
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+
   <style>
     :root{
       --bg0:#0b0d10; --bg1:#15181d; --card:rgba(25,28,34,.78);
@@ -13,16 +15,29 @@
       --ring:rgba(109,94,252,.5);
       --radius:18px; --shadow:0 16px 60px rgba(0,0,0,.45);
       --field:#1e222a; --fieldBorder:rgba(255,255,255,.08); --fieldHover:#242a34;
+
+      /* responsive scales */
+      --wrap-w: min(640px, 96vw);
+      --pad: clamp(14px, 3vw, 26px);
+      --gap: clamp(12px, 2.6vw, 18px);
+      --fs-base: clamp(13px, 1.9vw, 16px);
+      --fs-label: clamp(12px, 1.7vw, 14px);
+      --fs-title: clamp(20px, 3.6vw, 28px);
+      --ctl-pad-y: clamp(12px, 2.2vw, 14px);
+      --ctl-pad-x: clamp(14px, 3vw, 18px);
     }
+
     *{box-sizing:border-box}
+
     html,body{
       height:100%; margin:0; color:var(--text);
       font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      font-size: var(--fs-base);
       background:
         radial-gradient(1200px 600px at -10% -20%, #1b1d23 0%, transparent 70%),
         radial-gradient(1000px 500px at 120% -10%, #1a2431 0%, transparent 60%),
         linear-gradient(135deg, var(--bg0), var(--bg1));
-      display:grid; place-items:center; padding:24px;
+      display:grid; place-items:center; padding: var(--pad);
     }
     body::before{
       content:""; position:fixed; inset:0; opacity:.04; pointer-events:none;
@@ -31,9 +46,12 @@
     }
 
     .container{
-      width:min(560px,95vw); background:var(--card); border-radius:var(--radius);
-      padding:22px; box-shadow:var(--shadow); backdrop-filter:blur(10px);
-      border:1px solid rgba(255,255,255,.06); position:relative; isolation:isolate;
+      width: var(--wrap-w);
+      background:var(--card); border-radius:var(--radius);
+      padding: var(--pad);
+      box-shadow:var(--shadow); backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,.06);
+      position:relative; isolation:isolate;
     }
     .container::after{
       content:""; position:absolute; inset:-1px; border-radius:calc(var(--radius) + 1px);
@@ -42,18 +60,33 @@
       -webkit-mask-composite:xor; mask-composite:exclude; pointer-events:none; opacity:.25;
     }
 
-    .topbar{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap: var(--gap); margin-bottom: clamp(6px, 1.6vw, 10px);
+    }
     .title{
       margin:0; font-weight:800; line-height:1.15; letter-spacing:.2px;
       background:linear-gradient(135deg,#eaf7ff,#bcd6ff 60%,#c4ffe9);
       -webkit-background-clip:text; background-clip:text; color:transparent;
-      font-size:clamp(20px,3.6vw,28px);
+      font-size: var(--fs-title);
+      text-align:center;
+      flex:1;
     }
-    .btn{ display:inline-flex; align-items:center; gap:8px; border:none; cursor:pointer;
-      padding:10px 14px; border-radius:12px; font-weight:700; text-decoration:none;
-      transition:transform .2s,filter .2s,box-shadow .2s; }
+    .spacer{ width: clamp(60px, 14vw, 120px); } /* keeps title centered with single back button */
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      border:none; cursor:pointer;
+      padding: var(--ctl-pad-y) var(--ctl-pad-x);
+      border-radius:12px; font-weight:700; text-decoration:none;
+      transition:transform .2s,filter .2s,box-shadow .2s;
+      min-height: 44px;
+      font-size: 0.95em;
+      -webkit-tap-highlight-color: transparent;
+    }
     .btn-ghost{
       background:rgba(255,255,255,.06); color:var(--text); border:1px solid rgba(255,255,255,.12);
+      white-space:nowrap;
     }
     .btn-ghost:hover{ transform:translateY(-1px); }
     .btn-primary{
@@ -62,20 +95,26 @@
     }
     .btn-primary:hover{ transform:translateY(-2px); filter:brightness(1.05); }
 
-    .lead{ color:var(--muted); margin:.25rem 0 1rem; font-size:.9rem; }
+    .lead{ color:var(--muted); margin:.4rem 0 1rem; }
 
-    form{ display:grid; gap:14px; margin-top:6px; }
-    .row{ display:grid; gap:14px; }
-    @media(min-width:560px){ .row{ grid-template-columns:1fr 1fr } }
+    form{ display:grid; gap: var(--gap); margin-top:6px; }
+    /* Auto-fit 1–2 columns depending on width */
+    .row{
+      display:grid; gap: var(--gap);
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
 
     .field{ display:grid; gap:8px; }
-    label{ font-size:13px; color:var(--muted); }
+    label{ font-size: var(--fs-label); color:var(--muted); }
 
-    /* DARK selects / inputs */
     select, input[type="number"]{
-      width:100%; padding:12px 14px; border:1px solid var(--fieldBorder);
-      border-radius:12px; background:var(--field); color:var(--text);
-      font-size:15px; outline:none; transition:border-color .2s, box-shadow .2s, transform .2s, background-color .2s;
+      width:100%;
+      padding: 12px 14px;
+      border:1px solid var(--fieldBorder);
+      border-radius:12px;
+      background:var(--field); color:var(--text);
+      font-size:1em; outline:none;
+      transition:border-color .2s, box-shadow .2s, transform .2s, background-color .2s;
       appearance:none;
     }
     select:hover, input[type="number"]:hover{ background:var(--fieldHover); }
@@ -83,8 +122,7 @@
       border-color:var(--ring); box-shadow:0 0 0 4px rgba(109,94,252,.18);
       transform:translateY(-1px);
     }
-
-    /* custom dropdown arrow (light on dark) */
+    /* custom dropdown arrow */
     select{
       background-image:
         url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23cfd6ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>');
@@ -92,21 +130,43 @@
       padding-right:40px;
     }
 
-    .actions{ display:flex; gap:10px; margin-top:6px; justify-content:flex-end; flex-wrap:wrap; }
+    /* Numeric input UX on mobile */
+    input[type="number"]{ -moz-appearance: textfield; }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+
+    .actions{
+      display:flex; gap:10px; margin-top:6px; justify-content:flex-end; flex-wrap:wrap;
+    }
 
     .footer-note{
-      margin-top:10px; font-size:12px; color:var(--muted); text-align:center;
+      margin-top:10px; font-size: var(--fs-label); color:var(--muted); text-align:center;
+    }
+
+    /* Small phones: stretch actions and keep back button compact */
+    @media (max-width: 420px){
+      .actions .btn{ flex: 1 1 auto; }
+      .topbar a.btn{ padding-left:12px; padding-right:12px; }
+      .spacer{ width: 72px; }
+    }
+
+    /* Respect reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      *{ transition:none !important; animation:none !important; }
     }
   </style>
 </head>
 <body>
   <main class="container">
     <div class="topbar">
-      <a class="btn btn-ghost" href="{{ url_for('index') }}">← Back</a>
+      <a class="btn btn-ghost" href="{{ url_for('index') }}" aria-label="Back to home">← Back</a>
       <h1 class="title">Student Exam Performance — Form</h1>
-      <span style="width:88px"></span>
+      <span class="spacer" aria-hidden="true"></span>
     </div>
-    <p class="lead">Fill in the details below. We’ll estimate the exam performance and visualize it on the results page.</p>
+
+    <p class="lead">
+      Fill in the details below. We’ll estimate the exam performance and visualize it on the results page.
+    </p>
 
     <form action="{{ url_for('predict_datapoint') }}" method="post" novalidate>
       <div class="row">
